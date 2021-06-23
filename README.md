@@ -1,0 +1,1 @@
+# newsorcery_spa
