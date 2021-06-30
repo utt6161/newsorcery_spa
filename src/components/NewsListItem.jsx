@@ -20,7 +20,7 @@ export default function NewsListItem(props) {
     const itemURL = `/article?&id=${encodeURIComponent(props.data.id)}`
     return (
         <a href={itemURL} style = {{ textDecoration: "none"}} className="news-item">
-            <div className="card mb-3 no-rounding full-border custom-card bg-newspaper h-100">
+            <div className="card no-rounding full-border custom-card bg-newspaper h-100 mx-auto">
                 <ImageWrapper className="card-img-top no-rounding border-bottom border-bottom border-dark card-img-news" src={props.data.fields.thumbnail}
                      alt="Card image cap"/>
                 <div className="card-body">

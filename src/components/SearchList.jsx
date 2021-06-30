@@ -1,31 +1,43 @@
-import {connect, useDispatch} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import React, {
     useEffect, useRef, useState
 } from 'react';
 import {nanoid} from "@reduxjs/toolkit";
 import {SearchListItem} from "./SearchListItem";
-import {fetchSearchResults, incrementPage} from "../store/articlesSlice";
+import {
+    fetchSearchResults,
+    incrementPage,
+    selectArticlesData,
+    selectCurrentPage,
+    selectTotalPages
+} from "../store/articlesSlice";
 import {useInfiniteScroll} from "../customHooks/InfiniteScroll";
 import {useLocation, useParams} from "react-router";
-
-const checkIfEq = (left, right) => {
-    return JSON.stringify(left) !== JSON.stringify(right)
-}
-
+import {selectSectionInfo, selectSectionSelected} from "../store/sectionSlice";
+import {selectCurrentPath, selectSearchText} from "../store/searchSlice";
 
 const mapStateToProps = state => {
     return {
-        articlesData: state.articles.articlesData,
-        currentPage: state.articles.currentPage,
-        totalPages: state.articles.totalPages,
-        sectionSelected: state.section.sectionSelected,
-        sectionInfo: state.section.sectionInfo,
-        searchText: state.search.searchText,
+        // articlesData: state.articles.articlesData,
+        // currentPage: state.articles.currentPage,
+        // totalPages: state.articles.totalPages,
+        // sectionSelected: state.section.sectionSelected,
+        // sectionInfo: state.section.sectionInfo,
+        // searchText: state.search.searchText,
     }
 }
 
-export function SearchList(props) {
+const SearchList = () => {
     const dispatch = useDispatch();
+
+    const sectionSelected = useSelector(selectSectionSelected)
+    const searchText = useSelector(selectSearchText)
+    const totalPages = useSelector(selectTotalPages)
+    const currentPage = useSelector(selectCurrentPage)
+    const sectionInfo = useSelector(selectSectionInfo)
+    const articlesData = useSelector(selectArticlesData)
+
+
     const [toRender, setToRender] = useState([])
     const location = useLocation()
     const queryParser = new URLSearchParams(location.search)
@@ -33,41 +45,42 @@ export function SearchList(props) {
     const q = queryParser.get("q")
     useEffect(() => {
         let sectionIdToFetch
-        if (props.sectionSelected || sectionId){
+        if (sectionSelected || sectionId){
             // check for undefined might be redundant, but anyway, cant be too careful
-            if (props.sectionInfo.sectionId !== "" && props.sectionInfo.sectionId !== undefined){
-                sectionIdToFetch = props.sectionInfo.sectionId
+            if (sectionInfo.sectionId !== "" && sectionInfo.sectionId !== undefined){
+                sectionIdToFetch = sectionInfo.sectionId
             } else {
                 sectionIdToFetch = sectionId
             }
         }
         let searchTextToFetch
-        if (props.searchText || q){
+        if (searchText || q){
             // check for undefined might be redundant, but anyway, cant be too careful
-            if(props.searchText !== "" && props.searchText !== undefined){
-                searchTextToFetch = props.searchText
+            if(searchText !== "" && searchText !== undefined){
+                searchTextToFetch = searchText
             } else {
                 searchTextToFetch = q
             }
         }
         dispatch(fetchSearchResults({
-            currentPage: props.currentPage ?? 1,
-            sectionSelected: props.sectionSelected ?? false,
+            currentPage: currentPage ?? 1,
+            sectionSelected: sectionSelected ?? false,
             sectionInfo: {
                 sectionId: sectionIdToFetch
             },
             searchText: searchTextToFetch
         }))
-    }, [dispatch, props.currentPage, props.sectionInfo.sectionId])
+    }, [currentPage, sectionInfo.sectionId])
 
     useEffect(() => {
+        console.log("attempt to render search results")
         let toRenderBuffer = []
-        for (let i in props.articlesData) {
+        for (let i in articlesData) {
             toRenderBuffer.push(
-                <SearchListItem key={props.articlesData[i].id} data={props.articlesData[i]}/>
+                <SearchListItem key={articlesData[i].id} data={articlesData[i]}/>
             );
         }
-        if (props.totalPages !== undefined && props.totalPages === 0) {
+        if (totalPages !== undefined && totalPages === 0) {
             toRenderBuffer.push(
                 <div key = {nanoid()}>
                     <h1 className="px-4 pt-4 text-center">Couldn&apos;t find anything</h1>
@@ -75,9 +88,10 @@ export function SearchList(props) {
                 </div>
             )
         }
+        console.log(articlesData)
         setToRender(toRenderBuffer)
     },
-    [props.articlesData])
+    [articlesData])
 
     let bottomBoundaryRef = useRef(null)
     useInfiniteScroll(bottomBoundaryRef, dispatch, incrementPage)
@@ -89,4 +103,5 @@ export function SearchList(props) {
     );
 }
 
-export default connect(mapStateToProps)(SearchList)
+// export default connect(mapStateToProps)(SearchList)
+export default SearchList

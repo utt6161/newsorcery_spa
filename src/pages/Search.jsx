@@ -3,7 +3,7 @@ import React, {useEffect, useRef} from "react";
 import {useDispatch} from "react-redux";
 import {setSelected} from "../store/sectionSlice";
 import {setSearchText} from "../store/searchSlice";
-import {SearchList} from "../components/SearchList";
+import SearchList from "../components/SearchList";
 import {useLocation} from "react-router";
 
 export default function Search() {
@@ -14,6 +14,7 @@ export default function Search() {
     const queryParser = new URLSearchParams(location.search)
     const sectionId = queryParser.get("sectionId")
     const q = queryParser.get("q")
+
     useEffect(() =>
         {
             if (setSectionAndSearch.current) {

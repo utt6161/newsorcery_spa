@@ -28,7 +28,7 @@ export default function Sections() {
     // };
 
     const defaultButton = ['section-button', 'section-button-scrollable'];
-    const defaultSection = ['sections', 'scrollable-sections', 'section-borders'];
+    const defaultSection = ['sections', 'scrollable-sections', 'section-borders', "px-0"];
     const [buttonClasses, setButton] = useState(defaultButton);
     const [sectionClasses, setSection] = useState(defaultSection);
     // const [defaultWheel, setWheelEvent] = useState(true)

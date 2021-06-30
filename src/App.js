@@ -22,6 +22,7 @@ import Search from "./pages/Search";
 import Article from "./pages/Article";
 import {useHistory} from "react-router";
 import Home from "./pages/Home";
+import {TransitionGroup, CSSTransition} from 'react-transition-group'
 
 function App() {
 
@@ -69,11 +70,11 @@ function App() {
 
     const [showSettings, setShowSettings] = useState(false) // for a settings button
     let restoringHandler;
-    useEffect(()=>{
-        if(location.pathname === "/"){
+    useEffect(() => {
+        if (location.pathname === "/") {
             setShowSettings(true)
         }
-    },[showSettings])
+    }, [showSettings])
 
     switch (location.pathname) {
         case "/":
@@ -180,17 +181,18 @@ function App() {
                 </Navbar>
 
 
-                    <RouterSwitch>
-                        <Route exact path = "/">
-                            <Home/>
-                        </Route>
-                        <Route path="/search">
-                            <Search/>
-                        </Route>
-                        <Route path="/article">
-                            <Article/>
-                        </Route>
-                    </RouterSwitch>
+                <RouterSwitch>
+                    <Route exact path="/">
+                        <Home/>
+                    </Route>
+                    <Route path="/search">
+                        <Search/>
+                    </Route>
+                    <Route path="/article">
+                        <Article/>
+                    </Route>
+                </RouterSwitch>
+
 
                 <div className="fixed-bottom">
                     <Fade in={showAnchor}>

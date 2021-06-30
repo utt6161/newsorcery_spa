@@ -436,3 +436,13 @@ img[class="gu-image"]{
     src: url(./fonts/Granite-Bgvl.ttf) format("truetype");
     font-style: normal;
 }
+
+/*.fade-enter {*/
+/*    opacity: 0;*/
+/*    z-index: 1;*/
+/*}*/
+
+/*.fade-enter.fade-enter-active {*/
+/*    opacity: 1;*/
+/*    transition: opacity 1500ms ease-in;*/
+/*}*/

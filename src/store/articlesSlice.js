@@ -6,7 +6,9 @@ export const fetchSearchResults = createAsyncThunk(
     'articles/fetchSearchResults',
     async (paramObj, thunkAPI) => {
         const assebledURL = `${newsAPI}${paramObj.searchText && paramObj.searchText !== "undefined" ? ("&q=" + paramObj.searchText) : ""}&page=${paramObj.currentPage ? paramObj.currentPage : 1}${paramObj.sectionInfo.sectionId ? `&section=${paramObj.sectionInfo.sectionId}` : ''}`
-        const response = await axios.get(assebledURL)
+        const response = await axios.get(assebledURL).catch((e)=>{
+            console.log("something went wrong")
+        })
         return response.data.response
     })
 
