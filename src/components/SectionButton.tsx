@@ -13,7 +13,7 @@ export default function SectionButton(props: ISectionButtonProps){
                 className="section-button selected-button" onClick={props.onClick}>
             <p className="selected-button-text">{props.text}</p>
             <div className = "mr-1 d-flex">
-                <img className="cancel-image" src="/cancel.png" width="20" height="20"/>
+                <img alt = "cancel section icon" className="cancel-image" src="/cancel.png" width="20" height="20"/>
             </div>
         </Button>
     )

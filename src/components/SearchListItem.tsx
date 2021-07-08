@@ -1,10 +1,6 @@
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
 import React from "react";
 import strip from "../utils/stripHtml";
-import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import {useSelector} from "react-redux";
 import {ImageWrapper} from "./ImageWrapper";
 import {IArticleMinified} from "../utils/fetchInterfaces";
 

@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice, current} from '@reduxjs/toolkit'
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import axios from "axios";
 import {newsAPI} from "./crucialData";
 import {IArticleMinified, IFetchArticlesResult, IFetchNews, IFetchSearchResults} from "../utils/fetchInterfaces";

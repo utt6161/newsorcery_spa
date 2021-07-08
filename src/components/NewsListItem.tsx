@@ -1,10 +1,7 @@
 import React from 'react';
 import strip from "../utils/stripHtml";
-import {useSelector} from "react-redux";
-import {selectSwitch} from "../store/switchSlice";
 import {ImageWrapper} from "./ImageWrapper";
 import {IArticleMinified} from "../utils/fetchInterfaces";
-import {AxiosResponse} from "axios";
 
 interface INewsListItemProps<T>{
     data: T

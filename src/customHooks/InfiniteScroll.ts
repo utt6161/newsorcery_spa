@@ -1,6 +1,5 @@
-import React, {useEffect, useCallback, ReducerAction} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {dispatchType} from "../store/store";
-import {Action, ActionCreator, Reducer} from "redux";
 import {incrementPageType} from "../store/articlesSlice";
 // make API calls and pass the returned data via dispatch
 //
@@ -40,7 +39,7 @@ export const useInfiniteScroll: IInfScrollProps = (scrollRef, dispatch, reducer)
                 });
             }, ).observe(node);
         },
-        [dispatch]
+        [dispatch, reducer]
     );
 
     useEffect(() => {

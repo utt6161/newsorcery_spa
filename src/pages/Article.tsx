@@ -1,21 +1,13 @@
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import React, {useEffect, useRef, useState} from "react";
-import strip from "../utils/stripHtml";
+import React, {useEffect, useState} from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import {useDispatch, useSelector} from "react-redux";
-import {setSelected} from "../store/sectionSlice";
-import {setSearchText} from "../store/searchSlice";
-import {setCurrentPage} from "../store/articlesSlice";
 import Sections from "../components/Sections";
 import axios from "axios";
 import {apiKEY} from "../store/crucialData";
-import {useLocation, useParams} from "react-router";
+import {useLocation} from "react-router";
 
 export default function Article() {
 
-    const dispatch = useDispatch()
     // const query = useSelector(selectQuery) // left from non spa nexjs approach (accessing "server's slice"
     const [renderArticle, setArticleData] = useState("")
     const location = useLocation()
@@ -39,7 +31,7 @@ export default function Article() {
         } else {
             brokenArticleLink()
         }
-    }, [renderArticle])
+    }, [renderArticle, id])
 
     function contentToString() {
         return {__html: renderArticle};

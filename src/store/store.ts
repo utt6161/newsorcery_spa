@@ -2,7 +2,7 @@ import {combineReducers, configureStore} from '@reduxjs/toolkit'
 import sectionReducer from "./sectionSlice"
 import searchReducer from "./searchSlice"
 import articlesReducer from "./articlesSlice"
-import switchReducer, {switchSlice} from "./switchSlice";
+import switchReducer from "./switchSlice";
 
 const rootReducer = combineReducers({
     section: sectionReducer,

@@ -1,6 +1,6 @@
-import {connect, shallowEqual, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import React, {
-    useEffect, useLayoutEffect, useRef, useState
+    useEffect, useRef, useState
 } from 'react';
 import {nanoid} from "@reduxjs/toolkit";
 import {SearchListItem} from "./SearchListItem";
@@ -12,10 +12,9 @@ import {
     selectTotalPages
 } from "../store/articlesSlice";
 import {useInfiniteScroll} from "../customHooks/InfiniteScroll";
-import {useLocation, useParams} from "react-router";
+import {useLocation} from "react-router";
 import {selectSectionInfo, selectSectionSelected} from "../store/sectionSlice";
-import {selectCurrentPath, selectSearchText} from "../store/searchSlice";
-const isEqual = require("react-fast-compare");
+import {selectSearchText} from "../store/searchSlice";
 
 // const mapStateToProps = state => {
 //     return {
@@ -74,6 +73,7 @@ const SearchList = () => {
             },
             searchText: searchTextToFetch
         }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, sectionInfo.sectionId])
 
     useEffect(() => {
@@ -96,7 +96,7 @@ const SearchList = () => {
         console.log(articlesData)
         setToRender(toRenderBuffer)
     },
-    [articlesData])
+    [articlesData, totalPages])
 
     let bottomBoundaryRef = useRef(null)
     useInfiniteScroll(bottomBoundaryRef, dispatch, incrementPage)

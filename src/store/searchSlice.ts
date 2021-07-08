@@ -11,7 +11,7 @@ export const searchSlice = createSlice({
     initialState: {
         searchText: "",
         currentPath: ""
-    },
+    } as ISearchSliceInitState,
     reducers: {
         setSearch: (state, action) => {
             state.searchText = action.payload.searchText

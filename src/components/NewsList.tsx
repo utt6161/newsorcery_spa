@@ -1,4 +1,4 @@
-import {connect, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import React, {
     useEffect, useRef, useState
 } from 'react';
@@ -9,8 +9,6 @@ import {useInfiniteScroll} from "../customHooks/InfiniteScroll"
 import {nanoid} from "@reduxjs/toolkit";
 import {selectSwitch} from "../store/switchSlice";
 import {selectSectionInfo, selectSectionSelected} from "../store/sectionSlice";
-import {selectSearchText} from "../store/searchSlice";
-
 // const checkIfEq = (left, right) => {
 //     return JSON.stringify(left) !== JSON.stringify(right)
 // }
@@ -39,7 +37,7 @@ export function NewsList() {
     const currentPage = useSelector(selectCurrentPage)
     const sectionSelected = useSelector(selectSectionSelected)
     const sectionInfo = useSelector(selectSectionInfo)
-    const searchText = useSelector(selectSearchText)
+    // const searchText = useSelector(selectSearchText)
 
     const dispatch = useDispatch();
     const [toRender, setToRender] = useState(new Array<MasonryItem>())
@@ -87,7 +85,7 @@ export function NewsList() {
                 sectionId: sectionInfo ? sectionInfo.sectionId : ""
             }
         }))
-    }, [currentPage, sectionInfo])
+    }, [dispatch, currentPage, sectionInfo, sectionSelected])
 
     return (
         <>

@@ -39,6 +39,7 @@ export function ImageWrapper(props : React.ImgHTMLAttributes<HTMLImageElement>) 
     const imgErrorHandler = (event : React.SyntheticEvent<HTMLImageElement>) => {
         setErrored(true)
     }
+    // eslint-disable-next-line jsx-a11y/alt-text
     let imageToRender = <img {...props} onError={imgErrorHandler}/>
     if (isErrored || props.src === undefined) {
         imageToRender = <div className={props.className}> {errorSVG} </div>

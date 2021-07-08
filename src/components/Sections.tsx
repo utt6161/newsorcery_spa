@@ -6,7 +6,6 @@ import {sectionsList} from '../store/crucialData';
 import {selectSectionInfo, setSelected} from '../store/sectionSlice';
 import {nanoid} from "@reduxjs/toolkit";
 import {restoreArticlesState} from "../store/articlesSlice";
-import {selectCurrentPath} from "../store/searchSlice";
 import {useLocation} from "react-router-dom";
 
 export default function Sections() {

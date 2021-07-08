@@ -1,12 +1,12 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../src/styles/Global.css"
-import React, {useRef, useState, useEffect, MouseEventHandler} from "react";
+import React, {useRef, useState, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {Container, Navbar} from "react-bootstrap";
 import SectionButton from "./components/SectionButton";
 import {selectSectionInfo, selectSectionSelected, setUnselected} from "./store/sectionSlice";
-import Button, {ButtonType} from "react-bootstrap/Button";
-import {selectCurrentPath, selectSearchText, setCurrentPath, setSearchText} from "./store/searchSlice";
+import Button from "react-bootstrap/Button";
+import {selectSearchText, setCurrentPath, setSearchText} from "./store/searchSlice";
 import {restoreArticlesState} from "./store/articlesSlice";
 // @ts-ignore // no ts types, bruh
 import AnchorLink from 'react-anchor-link-smooth-scroll'
@@ -17,13 +17,11 @@ import SettingsIcon from "./components/SettingsIcon";
 import Modal from "react-bootstrap/Modal";
 import Switch from "./components/Switch";
 import {selectSwitch, setSwitch, toggleSwitch} from "./store/switchSlice";
-import {BrowserRouter, Switch as RouterSwitch, Route, useLocation} from "react-router-dom";
+import {Switch as RouterSwitch, Route, useLocation} from "react-router-dom";
 import Search from "./pages/Search";
 import Article from "./pages/Article";
 import {useHistory} from "react-router";
 import Home from "./pages/Home";
-
-import {TransitionGroup, CSSTransition} from 'react-transition-group'
 
 function App() {
 
@@ -74,6 +72,7 @@ function App() {
         if (location.pathname === "/") {
             setShowSettings(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showSettings])
 
     switch (location.pathname) {
