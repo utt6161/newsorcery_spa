@@ -1,4 +1,8 @@
-export const sectionsList = {
+interface IObjectKeys {
+    [key: string]: string;
+}
+
+export const sectionsList: IObjectKeys = {
     artanddesign: "Art and design",
     business: "Business",
     culture: "Culture",

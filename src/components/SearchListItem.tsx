@@ -5,8 +5,8 @@ import strip from "../utils/stripHtml";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {useSelector} from "react-redux";
-import {selectOrigin} from "../store/serverSlice";
 import {ImageWrapper} from "./ImageWrapper";
+import {IArticleMinified} from "../utils/fetchInterfaces";
 
 
 // <Card className = "w-100 full_border no_rounding m-2">
@@ -27,11 +27,13 @@ import {ImageWrapper} from "./ImageWrapper";
 //     </Card.Body>
 // </Card>
 
+interface ISearchListItemProps<T>{
+    data: T
+}
 
-export function SearchListItem(props) {
-    const origin = useSelector(selectOrigin)
+export function SearchListItem(props: ISearchListItemProps<IArticleMinified>) {
+
     const itemURL = `/article?&id=${encodeURIComponent(props.data.id)}`
-
 
     return(
 

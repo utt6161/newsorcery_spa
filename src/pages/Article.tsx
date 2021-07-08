@@ -5,7 +5,6 @@ import strip from "../utils/stripHtml";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {useDispatch, useSelector} from "react-redux";
-import {selectQuery} from "../store/serverSlice";
 import {setSelected} from "../store/sectionSlice";
 import {setSearchText} from "../store/searchSlice";
 import {setCurrentPage} from "../store/articlesSlice";
@@ -14,7 +13,7 @@ import axios from "axios";
 import {apiKEY} from "../store/crucialData";
 import {useLocation, useParams} from "react-router";
 
-export default function Article(props) {
+export default function Article() {
 
     const dispatch = useDispatch()
     // const query = useSelector(selectQuery) // left from non spa nexjs approach (accessing "server's slice"
@@ -47,12 +46,17 @@ export default function Article(props) {
     }
 
     useEffect(()=>{
+        // @ts-ignore
         window.twttr = (function(d, s, id) {
+            // @ts-ignore
             let js, fjs = d.getElementsByTagName(s)[0], t = window.twttr || {};
             if (d.getElementById(id)) return t;
             js = d.createElement(s); js.id = id;
+            // @ts-ignore
             js.src = "https://platform.twitter.com/widgets.js";
+            // @ts-ignore
             fjs.parentNode.insertBefore(js, fjs);
+            // @ts-ignore
             t._e = []; t.ready = function(f) {
                 t._e.push(f);
             };
@@ -63,9 +67,7 @@ export default function Article(props) {
 
     return (
         <>
-            <Sections>
-
-            </Sections>
+            <Sections/>
             <Row>
                 <Col>
                     <div className="m-1 p-2 full-border bg-white" dangerouslySetInnerHTML={ contentToString() }/>

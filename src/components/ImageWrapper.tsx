@@ -34,9 +34,9 @@ const errorSVG = <svg className = "m-auto d-block" enableBackground="new 0 0 512
     </g>
 </svg>
 
-export function ImageWrapper(props) {
+export function ImageWrapper(props : React.ImgHTMLAttributes<HTMLImageElement>) {
     const [isErrored, setErrored] = useState(false)
-    const imgErrorHandler = (event) => {
+    const imgErrorHandler = (event : React.SyntheticEvent<HTMLImageElement>) => {
         setErrored(true)
     }
     let imageToRender = <img {...props} onError={imgErrorHandler}/>

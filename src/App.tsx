@@ -1,27 +1,28 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../src/styles/Global.css"
-import React, {useRef, useState, useEffect} from "react";
+import React, {useRef, useState, useEffect, MouseEventHandler} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {wrapper} from "../src/store/store"
-import {selectOrigin, selectPathName, setPathAndQuery} from "./store/serverSlice";
 import {Container, Navbar} from "react-bootstrap";
-import SectionButton from "../src/components/SectionButton";
+import SectionButton from "./components/SectionButton";
 import {selectSectionInfo, selectSectionSelected, setUnselected} from "./store/sectionSlice";
-import Button from "react-bootstrap/Button";
+import Button, {ButtonType} from "react-bootstrap/Button";
 import {selectCurrentPath, selectSearchText, setCurrentPath, setSearchText} from "./store/searchSlice";
 import {restoreArticlesState} from "./store/articlesSlice";
+// @ts-ignore // no ts types, bruh
 import AnchorLink from 'react-anchor-link-smooth-scroll'
-import Fade from "react-bootstrap/Fade";
-import SettingsIcon from "../src/components/SettingsIcon";
-import Modal from "react-bootstrap/Modal";
-import Switch from "../src/components/Switch";
-import {selectSwitch, setSwitch, toggleSwitch} from "./store/switchSlice";
+// @ts-ignore
 import Cookies from "js-cookie/src/js.cookie"
+import Fade from "react-bootstrap/Fade";
+import SettingsIcon from "./components/SettingsIcon";
+import Modal from "react-bootstrap/Modal";
+import Switch from "./components/Switch";
+import {selectSwitch, setSwitch, toggleSwitch} from "./store/switchSlice";
 import {BrowserRouter, Switch as RouterSwitch, Route, useLocation} from "react-router-dom";
 import Search from "./pages/Search";
 import Article from "./pages/Article";
 import {useHistory} from "react-router";
 import Home from "./pages/Home";
+
 import {TransitionGroup, CSSTransition} from 'react-transition-group'
 
 function App() {
@@ -61,15 +62,14 @@ function App() {
     })
     const searchLocation = `/search?&q=${search}${sectionSelected ? "&sectionId=" + sectionInfo.sectionId : ""}`
 
-    const onSearchHandler = (event) => {
-        event.preventDefault()
+    const onSearchHandler: React.MouseEventHandler = (e) => {
         history.push(searchLocation)
     }
 
     // const [isNotEvenRows, setRows] = useState(true)
 
     const [showSettings, setShowSettings] = useState(false) // for a settings button
-    let restoringHandler;
+    let restoringHandler!: React.MouseEventHandler<HTMLButtonElement>
     useEffect(() => {
         if (location.pathname === "/") {
             setShowSettings(true)
@@ -78,20 +78,20 @@ function App() {
 
     switch (location.pathname) {
         case "/":
-            restoringHandler = (e) => {
+            restoringHandler = (e: React.MouseEvent<HTMLElement>) => {
                 dispatch(restoreArticlesState());
                 dispatch(setUnselected())
             }
             break;
         case "/search":
-            restoringHandler = (e) => {
+            restoringHandler = (e: React.MouseEvent<HTMLElement>) => {
                 dispatch(restoreArticlesState());
                 dispatch(setUnselected())
             }
             break;
 
         case "/article":
-            restoringHandler = (e) => {
+            restoringHandler = (e: React.MouseEvent<HTMLElement>) => {
                 dispatch(setUnselected())
             }
             break;
@@ -99,7 +99,7 @@ function App() {
 
     let setScrollAnchorListener = useRef(true)
     useEffect(() => {
-        if (setScrollAnchorListener) {
+        if (setScrollAnchorListener.current) {
             window.addEventListener('scroll', (event) => {
                 let yOffset = window.pageYOffset
                 if (yOffset > 1200) {
@@ -109,7 +109,7 @@ function App() {
                 }
             })
         }
-        setScrollAnchorListener = false
+        setScrollAnchorListener.current = false
     },)
     // tooltip thing, biohazard
     //         <Button className="ml-1 info_button d-none" variant="outline-primary" ref={target}
@@ -133,9 +133,7 @@ function App() {
                     <a data-cy="brand-link" className="navbar-brand brand" id="top" href="/">NEWSorcery</a>
                     <div className="d-flex w-100">
                         {sectionSelected &&
-                        <SectionButton text={sectionInfo.sectionText} onClick={restoringHandler}>
-
-                        </SectionButton>
+                        <SectionButton text={sectionInfo.sectionText} onClick={restoringHandler}/>
                         }
                         <input data-cy="search-input" placeholder="Search" aria-label="Search" value={search}
                                onChange={(e) => {
@@ -143,7 +141,7 @@ function App() {
                                }}
                                className="squared colored-search form-control" onKeyUp={({key}) => {
                             if (key === "Enter") {
-                                window.location = searchLocation
+                                window.location.href = searchLocation
                             }
                         }}/>
                         <Button data-cy="search-btn" className="squared ml-1" onClick={onSearchHandler}

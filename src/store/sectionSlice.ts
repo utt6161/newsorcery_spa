@@ -1,10 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {sectionsList} from "./crucialData"
+import {RootState} from "./store";
+
+
 
 export const sectionSlice = createSlice({
     name: 'section',
     initialState: {
-        // sectionSelected: false,
+        sectionSelected: false,
         sectionInfo: {
             sectionId: "",
             sectionText: ""
@@ -12,6 +15,9 @@ export const sectionSlice = createSlice({
     },
     reducers: {
         setSelected: (state, action) => {
+            console.log("section selection action got fired")
+            console.log("selected category: " + sectionsList[action.payload.sectionId])
+            console.log("passed id: " + action.payload.sectionId)
             if (action.payload.sectionId !== "" && Object.keys(sectionsList).includes(action.payload.sectionId)) {
                 state.sectionSelected = true;
                 state.sectionInfo = {
@@ -33,8 +39,8 @@ export const sectionSlice = createSlice({
     },
 });
 
-export const selectSectionInfo = (state) => state.section.sectionInfo;
-export const selectSectionSelected = (state) => state.section.sectionSelected;
+export const selectSectionInfo = (state: RootState) => state.section.sectionInfo;
+export const selectSectionSelected = (state: RootState) => state.section.sectionSelected;
 
 export const {setSelected, setUnselected} = sectionSlice.actions;
 

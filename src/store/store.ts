@@ -2,7 +2,7 @@ import {combineReducers, configureStore} from '@reduxjs/toolkit'
 import sectionReducer from "./sectionSlice"
 import searchReducer from "./searchSlice"
 import articlesReducer from "./articlesSlice"
-import switchReducer from "./switchSlice";
+import switchReducer, {switchSlice} from "./switchSlice";
 
 const rootReducer = combineReducers({
     section: sectionReducer,
@@ -11,13 +11,16 @@ const rootReducer = combineReducers({
     switch: switchReducer
 })
 
-export const testStore = configureStore({
-    reducer: rootReducer
-});
+// export const testStore = configureStore({
+//     reducer: rootReducer
+// });
 
 export const store = configureStore({
     reducer: rootReducer,
 })
+
+export type RootState = ReturnType<typeof store.getState>
+export type dispatchType = typeof store.dispatch
 
 // preloadedState :{
 //     section: {

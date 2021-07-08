@@ -54,3 +54,5 @@
 // export const {unsetNewsData, incrementPage, restoreNewsState} = newsSlice.actions
 //
 // export default newsSlice.reducer
+
+export {}

@@ -1,6 +1,18 @@
 import React from 'react';
+// @ts-ignore
 import Cookies from "js-cookie/src/js.cookie"
-const Switch = ({ isOn, handleObject }) => {
+import {dispatchType} from "../store/store";
+import {setSwitchType} from "../store/switchSlice";
+
+interface ISwitchProps{
+    isOn: boolean,
+    handleObject: {
+        dispatcher: dispatchType,
+        reducer: setSwitchType
+    }
+}
+
+const Switch = ({ isOn, handleObject }: ISwitchProps) => {
     return (
         <>
             <input

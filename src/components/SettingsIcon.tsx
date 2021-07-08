@@ -1,7 +1,7 @@
 import React from "react";
 
 
-export default function SettingsIcon(props){
+export default function SettingsIcon(props: React.SVGAttributes<HTMLElement>){
     return(
         <svg
             className = {props.className}

@@ -1,7 +1,12 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 
-export default function SectionButton(props){
+interface ISectionButtonProps{
+    onClick: React.MouseEventHandler<HTMLButtonElement>
+    text: string
+}
+
+export default function SectionButton(props: ISectionButtonProps){
 
     return(
         <Button data-cy = "section-btn" variant="outline-primary d-flex align-items-center"

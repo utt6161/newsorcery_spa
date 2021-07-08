@@ -1,12 +1,16 @@
 import React from 'react';
 import strip from "../utils/stripHtml";
 import {useSelector} from "react-redux";
-import {selectOrigin} from "../store/serverSlice";
 import {selectSwitch} from "../store/switchSlice";
 import {ImageWrapper} from "./ImageWrapper";
+import {IArticleMinified} from "../utils/fetchInterfaces";
+import {AxiosResponse} from "axios";
 
+interface INewsListItemProps<T>{
+    data: T
+}
 
-export default function NewsListItem(props) {
+export default function NewsListItem(props: INewsListItemProps<IArticleMinified>) {
     // let options = {
     //     era: 'long',
     //     year: 'numeric',

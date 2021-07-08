@@ -1,9 +1,7 @@
-import {useEffect, useCallback, useRef} from 'react';
-import axios from "axios";
-import {newsAPI} from "../store/crucialData";
-import {setNewsData, initiateLoading, loadingErrored, incrementPage} from "../store/newsSlice";
-import {useDispatch} from "react-redux";
-
+import React, {useEffect, useCallback, ReducerAction} from 'react';
+import {dispatchType} from "../store/store";
+import {Action, ActionCreator, Reducer} from "redux";
+import {incrementPageType} from "../store/articlesSlice";
 // make API calls and pass the returned data via dispatch
 //
 // export const useFetch = (dispatch, currentPage, sectionSelected, sectionInfo) => {
@@ -22,7 +20,14 @@ import {useDispatch} from "react-redux";
 // }
 
 // infinite scrolling with intersection observer
-export const useInfiniteScroll = (scrollRef, dispatch, reducer) => {
+
+interface IInfScrollProps {
+    (scrollRef: React.RefObject<HTMLElement>,
+    dispatch: dispatchType,
+    reducer: incrementPageType) : void
+}
+
+export const useInfiniteScroll: IInfScrollProps = (scrollRef, dispatch, reducer) => {
 
     const scrollObserver = useCallback(
         node => {

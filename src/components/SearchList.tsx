@@ -1,6 +1,6 @@
-import {connect, useDispatch, useSelector} from 'react-redux';
+import {connect, shallowEqual, useDispatch, useSelector} from 'react-redux';
 import React, {
-    useEffect, useRef, useState
+    useEffect, useLayoutEffect, useRef, useState
 } from 'react';
 import {nanoid} from "@reduxjs/toolkit";
 import {SearchListItem} from "./SearchListItem";
@@ -15,17 +15,22 @@ import {useInfiniteScroll} from "../customHooks/InfiniteScroll";
 import {useLocation, useParams} from "react-router";
 import {selectSectionInfo, selectSectionSelected} from "../store/sectionSlice";
 import {selectCurrentPath, selectSearchText} from "../store/searchSlice";
+const isEqual = require("react-fast-compare");
 
-const mapStateToProps = state => {
-    return {
-        // articlesData: state.articles.articlesData,
-        // currentPage: state.articles.currentPage,
-        // totalPages: state.articles.totalPages,
-        // sectionSelected: state.section.sectionSelected,
-        // sectionInfo: state.section.sectionInfo,
-        // searchText: state.search.searchText,
-    }
-}
+// const mapStateToProps = state => {
+//     return {
+//         articlesData: state.articles.articlesData,
+//         currentPage: state.articles.currentPage,
+//         totalPages: state.articles.totalPages,
+//         sectionSelected: state.section.sectionSelected,
+//         sectionInfo: state.section.sectionInfo,
+//         searchText: state.search.searchText,
+//     }
+// }
+
+// const eqCheck = () => {
+//
+// }
 
 const SearchList = () => {
     const dispatch = useDispatch();
@@ -38,7 +43,7 @@ const SearchList = () => {
     const articlesData = useSelector(selectArticlesData)
 
 
-    const [toRender, setToRender] = useState([])
+    const [toRender, setToRender] = useState(new Array<JSX.Element>())
     const location = useLocation()
     const queryParser = new URLSearchParams(location.search)
     const sectionId = queryParser.get("sectionId")
@@ -64,7 +69,6 @@ const SearchList = () => {
         }
         dispatch(fetchSearchResults({
             currentPage: currentPage ?? 1,
-            sectionSelected: sectionSelected ?? false,
             sectionInfo: {
                 sectionId: sectionIdToFetch
             },
@@ -80,7 +84,8 @@ const SearchList = () => {
                 <SearchListItem key={articlesData[i].id} data={articlesData[i]}/>
             );
         }
-        if (totalPages !== undefined && totalPages === 0) {
+        console.log(totalPages)
+        if (totalPages === undefined) {
             toRenderBuffer.push(
                 <div key = {nanoid()}>
                     <h1 className="px-4 pt-4 text-center">Couldn&apos;t find anything</h1>

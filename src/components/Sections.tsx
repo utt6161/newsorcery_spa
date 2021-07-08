@@ -5,7 +5,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {sectionsList} from '../store/crucialData';
 import {selectSectionInfo, setSelected} from '../store/sectionSlice';
 import {nanoid} from "@reduxjs/toolkit";
-import {selectPathName} from "../store/serverSlice";
 import {restoreArticlesState} from "../store/articlesSlice";
 import {selectCurrentPath} from "../store/searchSlice";
 import {useLocation} from "react-router-dom";
@@ -34,7 +33,7 @@ export default function Sections() {
     // const [defaultWheel, setWheelEvent] = useState(true)
     const [expanded, setExpanded] = useState(false);
 
-    let restoringHandler;
+    let restoringHandler!: React.MouseEventHandler<HTMLElement>
 
     // const serverSidePathName = useSelector(selectPathName) // (left from nextjs imp just in case)
     // const clientSidePathName = useSelector(selectCurrentPath) // (left from nextjs imp just in case)
@@ -43,35 +42,41 @@ export default function Sections() {
     let location = useLocation() // REACT ROUTER THING FOR ACCESSING WINDOW.LOCATION
     switch (location.pathname) {
     case "/":
-        restoringHandler = (e)=> {
+        restoringHandler = (e: React.MouseEvent<HTMLElement>) => {
             //well, right now we at the main page
             //console.log("switched section")
+            const el = e.currentTarget
+            // strange hack to convince ts that its actually a number
+            let sectionid: number = el.dataset!.sectionid as unknown as number
             dispatch(restoreArticlesState())
             dispatch(setSelected({
-                sectionId: Object.entries(sectionsList)[e.currentTarget.dataset.sectionid][0],
-                sectionText: Object.entries(sectionsList)[e.currentTarget.dataset.sectionid][1],
+                sectionId: Object.entries(sectionsList)[sectionid][0],
             }));
         }
         break;
     case "/search":
-        restoringHandler = (e)=> {
+        restoringHandler = (e: React.MouseEvent<HTMLElement>)=> {
             //well, right now we at the search page
             //console.log("switched section")
+            const el = e.currentTarget
+            // strange hack to convince ts that its actually a number
+            let sectionid: number = el.dataset!.sectionid as unknown as number
             dispatch(restoreArticlesState())
             dispatch(setSelected({
-                sectionId: Object.entries(sectionsList)[e.currentTarget.dataset.sectionid][0],
-                sectionText: Object.entries(sectionsList)[e.currentTarget.dataset.sectionid][1],
+                sectionId: Object.entries(sectionsList)[sectionid][0],
             }));
         }
         break;
 
     case "/article":
-        restoringHandler = (e)=> {
+        restoringHandler = (e: React.MouseEvent<HTMLElement>)=> {
             //well, right now we at the single article page
             //console.log("switched section")
+            const el = e.currentTarget
+            // strange hack to convince ts that its actually a number
+            let sectionid: number = el.dataset!.sectionid as unknown as number
             dispatch(setSelected({
-                sectionId: Object.entries(sectionsList)[e.currentTarget.dataset.sectionid][0],
-                sectionText: Object.entries(sectionsList)[e.currentTarget.dataset.sectionid][1],
+                sectionId: Object.entries(sectionsList)[sectionid][0],
             }));
         }
         break;
