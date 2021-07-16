@@ -3,6 +3,7 @@ import strip from "../utils/stripHtml";
 import Row from "react-bootstrap/Row";
 import {ImageWrapper} from "./ImageWrapper";
 import {IArticleMinified} from "../utils/fetchInterfaces";
+import {Link} from "react-router-dom";
 
 
 // <Card className = "w-100 full_border no_rounding m-2">
@@ -23,7 +24,7 @@ import {IArticleMinified} from "../utils/fetchInterfaces";
 //     </Card.Body>
 // </Card>
 
-interface ISearchListItemProps<T>{
+interface ISearchListItemProps<T> {
     data: T
 }
 
@@ -31,14 +32,14 @@ export function SearchListItem(props: ISearchListItemProps<IArticleMinified>) {
 
     const itemURL = `/article?&id=${encodeURIComponent(props.data.id)}`
 
-    return(
+    return (
 
-        <a href={itemURL} style = {{ textDecoration: "none"}} className="article-item">
+        <Link style={{textDecoration: "none"}} className="article-item" to={itemURL} >
             <div className="card full-border no-rounding m-2 p-2 bg-newspaper">
                 <div className="row">
                     <div className="col-md-4 my-auto">
                         <ImageWrapper src={props.data.fields.thumbnail}
-                            className="w-100 full-border card-img-search" alt="search image"/>
+                                      className="w-100 full-border card-img-search" alt="search image"/>
                     </div>
                     <div className="col-md-8 px-3 d-flex">
                         <div className="my-auto">
@@ -49,7 +50,7 @@ export function SearchListItem(props: ISearchListItemProps<IArticleMinified>) {
                                 </div>
                             </Row>
                             <Row>
-                                <small className = "px-3 pt-3"
+                                <small className="px-3 pt-3"
                                 >
                                     {`last updated: ${new Date(props.data.fields.lastModified).toLocaleString()}`}
                                 </small>
@@ -59,7 +60,6 @@ export function SearchListItem(props: ISearchListItemProps<IArticleMinified>) {
 
                 </div>
             </div>
-        </a>
-
+        </Link>
     )
 }

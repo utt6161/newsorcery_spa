@@ -2,6 +2,7 @@ import React from 'react';
 import strip from "../utils/stripHtml";
 import {ImageWrapper} from "./ImageWrapper";
 import {IArticleMinified} from "../utils/fetchInterfaces";
+import {Link} from "react-router-dom";
 
 interface INewsListItemProps<T>{
     data: T
@@ -20,7 +21,7 @@ export default function NewsListItem(props: INewsListItemProps<IArticleMinified>
     // };
     const itemURL = `/article?&id=${encodeURIComponent(props.data.id)}`
     return (
-        <a href={itemURL} style = {{ textDecoration: "none"}} className="news-item">
+        <Link style = {{ textDecoration: "none"}} className="news-item" to={itemURL}>
             <div className="card no-rounding full-border custom-card bg-newspaper h-100 mx-auto">
                 <ImageWrapper className="card-img-top no-rounding border-bottom border-bottom border-dark card-img-news" src={props.data.fields.thumbnail}
                      alt="Card image cap"/>
@@ -35,6 +36,6 @@ export default function NewsListItem(props: INewsListItemProps<IArticleMinified>
                     </small>
                 </div>
             </div>
-        </a>
+        </Link>
     )
 }

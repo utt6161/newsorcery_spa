@@ -1,15 +1,16 @@
 import {Row} from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {sectionsList} from '../store/crucialData';
-import {selectSectionInfo, setSelected} from '../store/sectionSlice';
+// import {selectSectionInfo, setSelected, setUnselected} from '../store/sectionSlice';
 import {nanoid} from "@reduxjs/toolkit";
-import {restoreArticlesState} from "../store/articlesSlice";
+import {setSectionId, selectSectionId, restoreArticlesState} from "../store/articlesSlice";
 import {useLocation} from "react-router-dom";
+import {useHistory} from "react-router";
 
 export default function Sections() {
-    const sectionInfo = useSelector(selectSectionInfo);
+    // const sectionInfo = useSelector(selectSectionInfo);
 
     const dispatch = useDispatch();
 
@@ -32,53 +33,38 @@ export default function Sections() {
     // const [defaultWheel, setWheelEvent] = useState(true)
     const [expanded, setExpanded] = useState(false);
 
-    let restoringHandler!: React.MouseEventHandler<HTMLElement>
-
     // const serverSidePathName = useSelector(selectPathName) // (left from nextjs imp just in case)
     // const clientSidePathName = useSelector(selectCurrentPath) // (left from nextjs imp just in case)
     //console.log("serverSidePathName(sections): " + serverSidePathName)
     //("clientSidePathName(sections): " + clientSidePathName)
+    const history = useHistory()
     let location = useLocation() // REACT ROUTER THING FOR ACCESSING WINDOW.LOCATION
-    switch (location.pathname) {
-    case "/":
-        restoringHandler = (e: React.MouseEvent<HTMLElement>) => {
-            //well, right now we at the main page
-            //console.log("switched section")
-            const el = e.currentTarget
-            // strange hack to convince ts that its actually a number
-            let sectionid: number = el.dataset!.sectionid as unknown as number
-            dispatch(restoreArticlesState())
-            dispatch(setSelected({
-                sectionId: Object.entries(sectionsList)[sectionid][0],
-            }));
-        }
-        break;
-    case "/search":
-        restoringHandler = (e: React.MouseEvent<HTMLElement>)=> {
-            //well, right now we at the search page
-            //console.log("switched section")
-            const el = e.currentTarget
-            // strange hack to convince ts that its actually a number
-            let sectionid: number = el.dataset!.sectionid as unknown as number
-            dispatch(restoreArticlesState())
-            dispatch(setSelected({
-                sectionId: Object.entries(sectionsList)[sectionid][0],
-            }));
-        }
-        break;
+    const queryParser = new URLSearchParams(window.location.search)
+    const urlSectionId = queryParser.get("sectionId")
+    const stateSectionId = useSelector(selectSectionId)
 
-    case "/article":
-        restoringHandler = (e: React.MouseEvent<HTMLElement>)=> {
-            //well, right now we at the single article page
-            //console.log("switched section")
-            const el = e.currentTarget
-            // strange hack to convince ts that its actually a number
-            let sectionid: number = el.dataset!.sectionid as unknown as number
-            dispatch(setSelected({
-                sectionId: Object.entries(sectionsList)[sectionid][0],
-            }));
+    // for the case when we have an url param on, but the state doesnt have sectionid param
+    useEffect(()=>{
+        if(location.pathname !== "/article") {
+            if (urlSectionId !== null && stateSectionId === "") {
+                console.log("getting section from URL query params in case u need to ofc")
+                dispatch(setSectionId({
+                    sectionId: urlSectionId
+                }))
+            }
         }
-        break;
+    })
+    let restoringHandler = (e: React.MouseEvent<HTMLElement>) => {
+        //well, right now we at the main page
+        //console.log("switched section")
+        const el = e.currentTarget
+        // strange hack to convince ts that its actually a number
+        let sectionid: number = el.dataset!.sectionid as unknown as number
+        queryParser.set("sectionId", Object.entries(sectionsList)[sectionid][0])
+        window.history.pushState("", "", location.pathname + "?" + queryParser.toString())
+        dispatch(setSectionId({
+            sectionId: Object.entries(sectionsList)[sectionid][0],
+        }));
     }
 
     // transform scrollable sections into full div
@@ -115,8 +101,8 @@ export default function Sections() {
 
     const buttons = [];
     for (let i = 0; i < Object.keys(sectionsList).length; i += 1) {
-        if (sectionInfo !== undefined) {
-            if (sectionInfo.sectionId === Object.entries(sectionsList)[i][0]) {
+        // if (sectionInfo !== undefined) {
+            if (stateSectionId === Object.entries(sectionsList)[i][0]) {
                 buttons.push(
                     <Button
                         key={nanoid()}
@@ -137,19 +123,19 @@ export default function Sections() {
                         <p className="section-text">{Object.entries(sectionsList)[i][1]}</p>
                     </Button>)
             }
-        } else {
-            buttons.push(
-                <Button
-                    data-sectionid = {i}
-                    key={nanoid()}
-                    variant="outline-primary"
-                    className={buttonClasses.join(' ')}
-                    onClick={restoringHandler}
-                >
-                    <p className="section-text">{Object.entries(sectionsList)[i][1]}</p>
-                </Button>,
-            );
-        }
+        // } else {
+        //     buttons.push(
+        //         <Button
+        //             data-sectionid = {i}
+        //             key={nanoid()}
+        //             variant="outline-primary"
+        //             className={buttonClasses.join(' ')}
+        //             onClick={restoringHandler}
+        //         >
+        //             <p className="section-text">{Object.entries(sectionsList)[i][1]}</p>
+        //         </Button>,
+        //     );
+        // }
     }
 
     // let wheelHandler = defaultWheel ? horizontalScroll : undefined

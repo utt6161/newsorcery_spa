@@ -6,11 +6,41 @@ export interface IFetchSearchResults {
     searchText: string | null | undefined | number
 }
 
+export interface IFetchSingleArticle {
+    sectionId: string
+}
+
+export interface IFetchSingleArticleResult {
+    response: {
+        "status": string,
+        "userTier": string,
+        "total": number,
+        "content": {
+            "id": string,
+            "type": string,
+            "sectionId": string,
+            "sectionName": string,
+            "webPublicationDate": string,
+            "webTitle": string,
+            "webUrl": string,
+            "apiUrl": string,
+            "fields": {
+                "headline": string,
+                "body": string
+            },
+            "isHosted": boolean,
+            "pillarId": string,
+            "pillarName": string
+        }
+    }
+
+}
+
 export interface IFetchNews {
     currentPage: number,
     sectionSelected: boolean
     sectionInfo: {
-        sectionId: number | string
+        sectionId: string | null
     },
 }
 

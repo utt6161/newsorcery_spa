@@ -6,16 +6,16 @@ import {nanoid} from "@reduxjs/toolkit";
 import {SearchListItem} from "./SearchListItem";
 import {
     fetchSearchResults,
-    incrementPage,
+    incrementPage, restoreArticlesState,
     selectArticlesData,
-    selectCurrentPage,
+    selectCurrentPage, selectIsErrored, selectIsPending, selectSectionId, selectSectionSelected,
     selectTotalPages
 } from "../store/articlesSlice";
 import {useInfiniteScroll} from "../customHooks/InfiniteScroll";
 import {useLocation} from "react-router";
-import {selectSectionInfo, selectSectionSelected} from "../store/sectionSlice";
 import {selectSearchText} from "../store/searchSlice";
-
+import Loading from "./Loading";
+import {Transition, animated, useSpring} from 'react-spring'
 // const mapStateToProps = state => {
 //     return {
 //         articlesData: state.articles.articlesData,
@@ -38,29 +38,22 @@ const SearchList = () => {
     const searchText = useSelector(selectSearchText)
     const totalPages = useSelector(selectTotalPages)
     const currentPage = useSelector(selectCurrentPage)
-    const sectionInfo = useSelector(selectSectionInfo)
+    const sectionId = useSelector(selectSectionId)
     const articlesData = useSelector(selectArticlesData)
-
-
-    const [toRender, setToRender] = useState(new Array<JSX.Element>())
+    const isPending = useSelector(selectIsPending)
+    const isErrored = useSelector(selectIsErrored)
+    const [toRender, setToRender] = useState<React.ReactNode[] | React.ReactNode>()
+    const [loadOrErrorRender, setLoadOrErrorRender] = useState<React.ReactNode>()
     const location = useLocation()
     const queryParser = new URLSearchParams(location.search)
-    const sectionId = queryParser.get("sectionId")
     const q = queryParser.get("q")
+    const urlSectionId = queryParser.get("sectionId")
+    const sectionPickedGottaSkip = useRef(urlSectionId !== null)
     useEffect(() => {
-        let sectionIdToFetch
-        if (sectionSelected || sectionId){
-            // check for undefined might be redundant, but anyway, cant be too careful
-            if (sectionInfo.sectionId !== "" && sectionInfo.sectionId !== undefined){
-                sectionIdToFetch = sectionInfo.sectionId
-            } else {
-                sectionIdToFetch = sectionId
-            }
-        }
         let searchTextToFetch
-        if (searchText || q){
+        if (searchText || q) {
             // check for undefined might be redundant, but anyway, cant be too careful
-            if(searchText !== "" && searchText !== undefined){
+            if (searchText !== "" && searchText !== undefined) {
                 searchTextToFetch = searchText
             } else {
                 searchTextToFetch = q
@@ -69,41 +62,84 @@ const SearchList = () => {
         dispatch(fetchSearchResults({
             currentPage: currentPage ?? 1,
             sectionInfo: {
-                sectionId: sectionIdToFetch
+                sectionId: sectionId
             },
             searchText: searchTextToFetch
         }))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, sectionInfo.sectionId])
+    }, [currentPage, sectionId])
 
     useEffect(() => {
-        console.log("attempt to render search results")
-        let toRenderBuffer = []
-        for (let i in articlesData) {
-            toRenderBuffer.push(
-                <SearchListItem key={articlesData[i].id} data={articlesData[i]}/>
-            );
+        if (articlesData.length !== 0) {
+            let toRenderBuffer = []
+            for (let i in articlesData) {
+                toRenderBuffer.push(
+                    <SearchListItem key={articlesData[i].id} data={articlesData[i]}/>
+                );
+            }
+            setToRender(toRenderBuffer)
         }
-        console.log(totalPages)
-        if (totalPages === undefined) {
-            toRenderBuffer.push(
-                <div key = {nanoid()}>
-                    <h1 className="px-4 pt-4 text-center">Couldn&apos;t find anything</h1>
-                    <h5 className="text-center">try again, perhaps?</h5>
-                </div>
+        if (isErrored) {
+            setLoadOrErrorRender(
+                <>
+                    <h1 style={{color: "#1f8afe"}} className="px-4 pt-4 text-center">Now that&apos;s really strange,
+                        something&apos;s broken</h1>
+                    <h5 style={{color: "#1f8afe"}} className="text-center">you shouldn&apos;t be here in a first
+                        place</h5>
+                </>
             )
         }
-        console.log(articlesData)
-        setToRender(toRenderBuffer)
-    },
-    [articlesData, totalPages])
+        if (isPending) {
+            setLoadOrErrorRender(
+                <>
+                    <Loading/>
+                </>
+            )
+        }
+    }, [articlesData, isPending, isErrored])
 
     let bottomBoundaryRef = useRef(null)
+
+    // magic so we dont fuck up sections
+    // its been 5 hours and i already forgot
+    // wtf i did here, anyway
     useInfiniteScroll(bottomBoundaryRef, dispatch, incrementPage)
+    const prevSectionRef = useRef("");
+    useEffect(() => {
+        prevSectionRef.current = sectionId;
+    });
+    const prevSection = prevSectionRef.current;
+    const [show, toggle] = useState(false)
+    useEffect(() => {
+        if (sectionId !== prevSection) {
+            toggle(false)
+        }
+    },)
+
     return (
         <>
-            {toRender}
-            <div id='page-bottom-boundary' className="boundary-div-news" ref={bottomBoundaryRef}/>
+            {!isPending && !isErrored &&
+            <Transition
+                items={show}
+                from={{opacity: 0}}
+                enter={{opacity: 1}}
+                config={{duration: 200}}
+                onRest={() =>
+                    toggle(true)
+                }
+
+            >{(styles, item) =>
+                item && <animated.div style={styles}>
+                    {toRender}
+                    <div data-cy="infinitescroll-boundary" id='page-bottom-boundary' className="boundary-div-news"
+                         ref={bottomBoundaryRef}/>
+                </animated.div>
+            }
+            </Transition>
+            }
+            {isErrored || isPending &&
+                loadOrErrorRender
+            }
         </>
     );
 }

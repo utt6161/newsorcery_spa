@@ -36,6 +36,7 @@ export interface State {
 }
 
 export class Masonry extends React.PureComponent<Props, State> {
+    static whyDidYouRender = true
     public state: State = {
         containerWidth: this.props.containerWidth
     };

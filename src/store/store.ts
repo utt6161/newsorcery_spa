@@ -1,14 +1,14 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit'
-import sectionReducer from "./sectionSlice"
 import searchReducer from "./searchSlice"
 import articlesReducer from "./articlesSlice"
 import switchReducer from "./switchSlice";
+import singleReducer from "./singleSlice"
 
 const rootReducer = combineReducers({
-    section: sectionReducer,
     search: searchReducer,
     articles: articlesReducer,
-    switch: switchReducer
+    switch: switchReducer,
+    single: singleReducer
 })
 
 // export const testStore = configureStore({
@@ -17,6 +17,15 @@ const rootReducer = combineReducers({
 
 export const store = configureStore({
     reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                // Ignore these action types
+                ignoredActions: ['articles/fetchNews/fulfilled', 'articles/fetchSearchResults/fulfilled','single/fetchSingleArticle/fulfilled'],
+                // Ignore these field paths in all actions
+                ignoredActionPaths: ['payload.headers', 'payload.request', 'payload.data.content.fields.body'],
+            },
+        }),
 })
 
 export type RootState = ReturnType<typeof store.getState>
