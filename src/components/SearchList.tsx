@@ -1,5 +1,6 @@
 import {useDispatch, useSelector} from 'react-redux';
 import React, {
+    memo,
     useEffect, useRef, useState
 } from 'react';
 import {nanoid} from "@reduxjs/toolkit";
@@ -148,5 +149,9 @@ const SearchList = () => {
     );
 }
 
+const checkForEqual = (prev: any, current: any) => {
+    return prev === current
+}
+
 // export default connect(mapStateToProps)(SearchList)
-export default SearchList
+export default memo(SearchList, checkForEqual)
