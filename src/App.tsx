@@ -27,6 +27,7 @@ import {CSSTransition, TransitionGroup} from "react-transition-group";
 import Sections from "./components/Sections";
 import {Transition, animated} from 'react-spring'
 import {sectionsList} from "./store/crucialData";
+import SearchField from "./components/SearchField";
 
 function App() {
 
@@ -78,27 +79,16 @@ function App() {
     })
 
 
-    const search = useSelector(selectSearchText)
+    //const search = useSelector(selectSearchText)
     //const serverSidePathName = useSelector(selectPathName) // for a server's info, servers will be null after first render of articles
     //const clientSidePathName = useSelector(selectCurrentPath) // for a clients' info
     //console.log("serverSidePathName(_appjs): " + serverSidePathName)
     //console.log("clientSidePathName(_appjs): " + clientSidePathName)
     const sectionSelected = useSelector(selectSectionSelected)
     const stateSectionId = useSelector(selectSectionId)
-    const setSearchInfo = useRef(true)
     const [showAnchor, setShowAnchor] = useState(false);
     const [modalShow, setModalShow] = useState(false); // for a modal with settings
     const queryParser = new URLSearchParams(location.search)
-    const searchQuery = queryParser.get("q")
-
-    useEffect(() => {
-        if (setSearchInfo.current) {
-            dispatch(setCurrentPath(searchQuery))
-            setSearchInfo.current = false
-        }
-    })
-
-    const searchLocation = `/search?q=${search}${sectionSelected ? "&sectionId=" + stateSectionId : ""}`
 
     const toMainPageHandler: React.MouseEventHandler = (e) => {
         if(stateSectionId !== ""){
@@ -106,10 +96,7 @@ function App() {
         }
     }
 
-    const onSearchHandler: React.MouseEventHandler = (e) => {
-        history.push(searchLocation)
-        dispatch(setSearchText(searchQuery))
-    }
+
 
     // const [isNotEvenRows, setRows] = useState(true)
 
@@ -131,6 +118,7 @@ function App() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showSettings])
+
 
     let setScrollAnchorListener = useRef(true)
     useEffect(() => {
@@ -170,18 +158,9 @@ function App() {
                         {sectionSelected &&
                         <SectionButton text={sectionsList[stateSectionId]} onClick={restoringHandler}/>
                         }
-                        <input data-cy="search-input" placeholder="Search" aria-label="Search" value={search}
-                               onChange={(e) => {
-                                   dispatch(setSearchText(e.target.value))
-                               }}
-                               className="squared colored-search form-control" onKeyUp={({key}) => {
-                            if (key === "Enter") {
-                                dispatch(setSearchText(searchQuery))
-                                history.push(searchLocation)
-                            }
-                        }}/>
-                        <Button data-cy="search-btn" className="squared ml-1" onClick={onSearchHandler}
-                                variant="outline-primary">Search</Button>
+
+                        <SearchField/>
+
                         {showSettings &&
                         <>
                             <Button data-cy="settings-btn" className="squared settings-button ml-1 px-2 py-0"

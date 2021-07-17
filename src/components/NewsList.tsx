@@ -9,9 +9,9 @@ import {
     fetchNews,
     incrementPage,
     selectArticlesData,
-    selectCurrentPage, selectIsErrored, selectIsPending
+    selectCurrentPage, selectIsErrored, selectIsIncrementable, selectIsPending
 } from "../store/articlesSlice";
-import {useInfiniteScroll} from "../customHooks/InfiniteScroll"
+import {InfiniteScrollDiv} from "./InfiniteScroll"
 import {nanoid} from "@reduxjs/toolkit";
 import {selectSwitch} from "../store/switchSlice";
 import {selectSectionId, selectSectionSelected} from "../store/articlesSlice";
@@ -49,6 +49,7 @@ const NewsList = () => {
     const sectionId = useSelector(selectSectionId)
     const isPending = useSelector(selectIsPending)
     const isErrored = useSelector(selectIsErrored)
+    const isIncrementable = useSelector(selectIsIncrementable)
     // const searchText = useSelector(selectSearchText)
 
     const dispatch = useDispatch();
@@ -57,7 +58,7 @@ const NewsList = () => {
     const skipNewsOnce = useRef(true);
     const settingsSwitch = useSelector(selectSwitch)
     // const skipSectionOnce = useRef(true)
-    let bottomBoundaryRef = useRef(null)
+
 
     const queryParser = new URLSearchParams(location.search)
     const urlSectionId = queryParser.get("sectionId")
@@ -77,7 +78,6 @@ const NewsList = () => {
     // that name below tho.. bruh
     const sectionPickedGottaSkip = useRef(urlSectionId !== null)
 
-    useInfiniteScroll(bottomBoundaryRef, dispatch, incrementPage)
     useEffect(() => {
         if (!sectionPickedGottaSkip.current) {
             dispatch(fetchNews({
@@ -148,7 +148,7 @@ const NewsList = () => {
     />
     return (
         <>
-            {!isPending && !isErrored &&
+            {!isPending && !isErrored && !isIncrementable &&
             <>
                 <Transition
                     items={show}
@@ -165,10 +165,12 @@ const NewsList = () => {
                     </animated.div>
                 }
                 </Transition>
-                <div data-cy="infinitescroll-boundary" id='page-bottom-boundary' className="boundary-div-news"
-                ref={bottomBoundaryRef}/>
             </>
             }
+            {isIncrementable &&
+                mainPiece
+            }
+            <InfiniteScrollDiv/>
             {isErrored || isPending &&
                 loadOrErrorRender
             }

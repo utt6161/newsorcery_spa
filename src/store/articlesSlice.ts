@@ -8,6 +8,7 @@ interface IArticlesSliceInitState {
     isErrored: boolean,
     isPending: boolean,
     articlesData: IArticleMinified[],
+    isIncrementable: boolean,
     sectionData: {
         sectionId: string,
         sectionText: string,
@@ -38,6 +39,7 @@ export const articlesSlice = createSlice({
         isErrored: false,
         isPending: false,
         articlesData: [],
+        isIncrementable: false,
         sectionData: {
             sectionId: "",
             sectionText: "",
@@ -50,10 +52,10 @@ export const articlesSlice = createSlice({
     reducers: {
 
         setSectionId: (state, action) => {
-            console.log("section selection action got fired")
-            console.log("selected category: " + sectionsList[action.payload.sectionId])
-            console.log("passed id: " + action.payload.sectionId)
             if (action.payload.sectionId !== "" && Object.keys(sectionsList).includes(action.payload.sectionId)) {
+                state.isErrored = false
+                state.isPending = false
+                state.isIncrementable = false
                 state.articlesData = []
                 state.currentPage = 1
                 state.totalPages = 0
@@ -70,6 +72,9 @@ export const articlesSlice = createSlice({
         },
 
         incrementPage: (state) => {
+            if(!state.isIncrementable){
+                state.isIncrementable = true
+            }
             if ( (state.currentPage < state.totalPages) && (state.articlesData.length !== 0) )  {
                 state.currentPage++
             } else {
@@ -77,6 +82,9 @@ export const articlesSlice = createSlice({
         },
 
         restoreArticlesState: state => {
+            state.isErrored = false
+            state.isPending = false
+            state.isIncrementable = false
             state.currentPage = 1
             state.articlesData = []
             state.totalPages = 0
@@ -86,6 +94,11 @@ export const articlesSlice = createSlice({
                 sectionSelected: false
             }
         },
+        newSearchFetch: state => {
+            state.currentPage = 1
+            state.articlesData = []
+            state.totalPages = 0
+        }
 
     },
 
@@ -140,8 +153,9 @@ export const selectSectionId = (state: RootState) => state.articles.sectionData.
 export const selectSectionSelected = (state: RootState) => state.articles.sectionData.sectionSelected
 export const selectIsPending = (state: RootState) => state.articles.isPending
 export const selectIsErrored = (state: RootState) => state.articles.isErrored
+export const selectIsIncrementable = (state: RootState) => state.articles.isIncrementable
 
-export const {incrementPage, restoreArticlesState, setCurrentPage, setSectionId} = articlesSlice.actions
+export const {incrementPage, restoreArticlesState, setCurrentPage, setSectionId, newSearchFetch} = articlesSlice.actions
 
 export type incrementPageType = typeof incrementPage
 

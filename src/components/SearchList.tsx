@@ -8,14 +8,14 @@ import {
     fetchSearchResults,
     incrementPage, restoreArticlesState,
     selectArticlesData,
-    selectCurrentPage, selectIsErrored, selectIsPending, selectSectionId, selectSectionSelected,
+    selectCurrentPage, selectIsErrored, selectIsIncrementable, selectIsPending, selectSectionId, selectSectionSelected,
     selectTotalPages
 } from "../store/articlesSlice";
-import {useInfiniteScroll} from "../customHooks/InfiniteScroll";
 import {useLocation} from "react-router";
 import {selectSearchText} from "../store/searchSlice";
 import Loading from "./Loading";
 import {Transition, animated, useSpring} from 'react-spring'
+import {InfiniteScrollDiv} from "./InfiniteScroll";
 // const mapStateToProps = state => {
 //     return {
 //         articlesData: state.articles.articlesData,
@@ -39,6 +39,7 @@ const SearchList = () => {
     const totalPages = useSelector(selectTotalPages)
     const currentPage = useSelector(selectCurrentPage)
     const sectionId = useSelector(selectSectionId)
+    const isIncrementable = useSelector(selectIsIncrementable)
     const articlesData = useSelector(selectArticlesData)
     const isPending = useSelector(selectIsPending)
     const isErrored = useSelector(selectIsErrored)
@@ -53,7 +54,7 @@ const SearchList = () => {
         let searchTextToFetch
         if (searchText || q) {
             // check for undefined might be redundant, but anyway, cant be too careful
-            if (searchText !== "" && searchText !== undefined) {
+            if (searchText !== "" && q === searchText) {
                 searchTextToFetch = searchText
             } else {
                 searchTextToFetch = q
@@ -67,7 +68,7 @@ const SearchList = () => {
             searchText: searchTextToFetch
         }))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, sectionId])
+    }, [currentPage, sectionId, searchText])
 
     useEffect(() => {
         if (articlesData.length !== 0) {
@@ -103,7 +104,6 @@ const SearchList = () => {
     // magic so we dont fuck up sections
     // its been 5 hours and i already forgot
     // wtf i did here, anyway
-    useInfiniteScroll(bottomBoundaryRef, dispatch, incrementPage)
     const prevSectionRef = useRef("");
     useEffect(() => {
         prevSectionRef.current = sectionId;
@@ -119,26 +119,30 @@ const SearchList = () => {
     return (
         <>
             {!isPending && !isErrored &&
-            <Transition
-                items={show}
-                from={{opacity: 0}}
-                enter={{opacity: 1}}
-                config={{duration: 200}}
-                onRest={() =>
-                    toggle(true)
-                }
+            <>
+                <Transition
+                    items={show}
+                    from={{opacity: 0}}
+                    enter={{opacity: 1}}
+                    config={{duration: 200}}
+                    onRest={() =>
+                        toggle(true)
+                    }
 
-            >{(styles, item) =>
-                item && <animated.div style={styles}>
-                    {toRender}
-                    <div data-cy="infinitescroll-boundary" id='page-bottom-boundary' className="boundary-div-news"
-                         ref={bottomBoundaryRef}/>
-                </animated.div>
+                >{(styles, item) =>
+                    item && <animated.div style={styles}>
+                        {toRender}
+                    </animated.div>
+                }
+                </Transition>
+            </>
             }
-            </Transition>
+            {isIncrementable &&
+                toRender
             }
+            <InfiniteScrollDiv/>
             {isErrored || isPending &&
-                loadOrErrorRender
+            loadOrErrorRender
             }
         </>
     );

@@ -1,6 +1,7 @@
-import React, {useEffect, useCallback} from 'react';
+import React, {useEffect, useCallback, useRef, RefObject} from 'react';
 import {dispatchType} from "../store/store";
-import {incrementPageType} from "../store/articlesSlice";
+import {incrementPage, incrementPageType} from "../store/articlesSlice";
+import {useDispatch, useSelector} from "react-redux";
 // make API calls and pass the returned data via dispatch
 //
 // export const useFetch = (dispatch, currentPage, sectionSelected, sectionInfo) => {
@@ -21,12 +22,12 @@ import {incrementPageType} from "../store/articlesSlice";
 // infinite scrolling with intersection observer
 
 interface IInfScrollProps {
-    (scrollRef: React.RefObject<HTMLElement>,
+    (scrollRef: RefObject<HTMLDivElement>,
     dispatch: dispatchType,
     reducer: incrementPageType) : void
 }
 
-export const useInfiniteScroll: IInfScrollProps = (scrollRef, dispatch, reducer) => {
+const useInfiniteScroll: IInfScrollProps = (scrollRef, dispatch, reducer) => {
 
     const scrollObserver = useCallback(
         node => {
@@ -49,6 +50,18 @@ export const useInfiniteScroll: IInfScrollProps = (scrollRef, dispatch, reducer)
         }
     }, [scrollObserver, scrollRef]);
 }
+
+export const InfiniteScrollDiv = () => {
+    const dispatch = useDispatch();
+    const bottomBoundaryRef = useRef<HTMLDivElement>(null)
+    useInfiniteScroll(bottomBoundaryRef, dispatch, incrementPage)
+
+    return(
+        <div data-cy="infinitescroll-boundary" id='page-bottom-boundary' className="boundary-div-news"
+        ref={bottomBoundaryRef}/>
+    )
+}
+
 
 // lazy load images with intersection observer
 // export const useLazyLoading = (imgSelector, items) => {
