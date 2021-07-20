@@ -44,19 +44,16 @@ export default function Sections() {
     const stateSectionId = useSelector(selectSectionId)
 
     // for the case when we have an url param on, but the state doesnt have sectionid param
-    useEffect(()=>{
-        if(location.pathname !== "/article") {
-            if (urlSectionId !== null && stateSectionId === "") {
-                console.log("getting section from URL query params in case u need to ofc")
-                dispatch(setSectionId({
-                    sectionId: urlSectionId
-                }))
-            }
-        }
-    })
+    // useEffect(()=>{
+    //     if (urlSectionId !== null && stateSectionId === "") {
+    //         console.log("getting section from URL query params in case u need to ofc")
+    //         dispatch(setSectionId({
+    //             sectionId: urlSectionId
+    //         }))
+    //     }
+    // })
+
     let restoringHandler = (e: React.MouseEvent<HTMLElement>) => {
-        //well, right now we at the main page
-        //console.log("switched section")
         const el = e.currentTarget
         // strange hack to convince ts that its actually a number
         let sectionid: number = el.dataset!.sectionid as unknown as number

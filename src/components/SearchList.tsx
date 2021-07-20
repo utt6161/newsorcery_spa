@@ -10,7 +10,8 @@ import {
     incrementPage, restoreArticlesState,
     selectArticlesData,
     selectCurrentPage, selectIsErrored, selectIsIncrementable, selectIsPending, selectSectionId, selectSectionSelected,
-    selectTotalPages
+    selectTotalPages,
+    setSectionId
 } from "../store/articlesSlice";
 import {useLocation} from "react-router";
 import {selectSearchText} from "../store/searchSlice";
@@ -35,8 +36,8 @@ import {InfiniteScrollDiv} from "./InfiniteScroll";
 const SearchList = () => {
     const dispatch = useDispatch();
 
-    const sectionSelected = useSelector(selectSectionSelected)
-    const searchText = useSelector(selectSearchText)
+    const sectionSelected = useSelector(selectSectionSelected);
+    const searchText = useSelector(selectSearchText);
     const totalPages = useSelector(selectTotalPages)
     const currentPage = useSelector(selectCurrentPage)
     const sectionId = useSelector(selectSectionId)
@@ -47,24 +48,42 @@ const SearchList = () => {
     const [toRender, setToRender] = useState<React.ReactNode[] | React.ReactNode>()
     const [loadOrErrorRender, setLoadOrErrorRender] = useState<React.ReactNode>()
     const location = useLocation()
-    const queryParser = new URLSearchParams(location.search)
+    const queryParser = new URLSearchParams(window.location.search)
     const q = queryParser.get("q")
     const urlSectionId = queryParser.get("sectionId")
     const sectionPickedGottaSkip = useRef(urlSectionId !== null)
+
     useEffect(() => {
-        let searchTextToFetch
+        if (urlSectionId !== null && sectionId === "") {
+            dispatch(setSectionId({
+                sectionId: urlSectionId
+            }))
+        }
+    })
+
+    useEffect(() => {
+        let searchTextToFetch = ""
         if (searchText || q) {
             // check for undefined might be redundant, but anyway, cant be too careful
             if (searchText !== "" && q === searchText) {
                 searchTextToFetch = searchText
             } else {
-                searchTextToFetch = q
+                searchTextToFetch = q!
             }
         }
+        let sectionIdToFetch = ""
+        if (sectionId || urlSectionId) {
+            if (sectionId !== "" && urlSectionId === sectionId) {
+                sectionIdToFetch = sectionId
+            } else {
+                sectionIdToFetch = urlSectionId!
+            }
+        }
+
         dispatch(fetchSearchResults({
             currentPage: currentPage ?? 1,
             sectionInfo: {
-                sectionId: sectionId
+                sectionId: sectionIdToFetch
             },
             searchText: searchTextToFetch
         }))
@@ -139,7 +158,7 @@ const SearchList = () => {
             </>
             }
             {isIncrementable &&
-                toRender
+            toRender
             }
             <InfiniteScrollDiv/>
             {isErrored || isPending &&

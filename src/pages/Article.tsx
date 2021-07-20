@@ -21,10 +21,10 @@ export default function Article() {
 
     const location = useLocation()
     const id = new URLSearchParams(location.search).get("id")
-    const brokenArticleLink = () => {
-        setArticleData("<h1 class = 'px-4 pt-4 text-center'>Seems like link to the article is broken</h1>" +
-            "<h5 class = 'text-center'>try again, perhaps?</h5>")
-    }
+    // const brokenArticleLink = () => {
+    //     setArticleData("<h1 class = 'px-4 pt-4 text-center'>Seems like link to the article is broken</h1>" +
+    //         "<h5 class = 'text-center'>try again, perhaps?</h5>")
+    // }
 
     const [loadOrErrorRender, setLoadOrErrorRender] = useState<React.ReactNode>()
     useEffect(()=>{
@@ -34,10 +34,8 @@ export default function Article() {
         if (isErrored) {
             setLoadOrErrorRender(
                 <>
-                    <h1 style={{color: "#1f8afe"}} className="px-4 pt-4 text-center">Now that&apos;s really strange,
-                        something&apos;s broken</h1>
-                    <h5 style={{color: "#1f8afe"}} className="text-center">you shouldn&apos;t be here in a first
-                        place</h5>
+                    <h1 className = 'px-4 pt-4 text-center'>Seems like link to the article is broken</h1>
+                    <h5 className = 'text-center'>try again, perhaps?</h5>
                 </>
             )
         }
@@ -54,13 +52,9 @@ export default function Article() {
     const fetchOnce = useRef(true)
     useEffect(() => {
         if(fetchOnce.current){
-            if (id !== undefined && id !== null) {
-                dispatch(fetchSingleArticle({
-                    sectionId: id
-                }))
-            } else {
-                brokenArticleLink()
-            }
+            dispatch(fetchSingleArticle({
+                sectionId: id !== null ? id : ""
+            }))
             fetchOnce.current = false
         }
     }, [])
@@ -117,7 +111,7 @@ export default function Article() {
 
             </Transition>
             }
-            {isErrored || isPending &&
+            {(isErrored || isPending) &&
             loadOrErrorRender
             }
         </>

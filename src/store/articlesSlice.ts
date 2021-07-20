@@ -1,8 +1,21 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
+import {
+    createAsyncThunk,
+    createSlice
+} from '@reduxjs/toolkit'
 import axios from "axios";
-import {newsAPI, sectionsList} from "./crucialData";
-import {IArticleMinified, IFetchArticlesResult, IFetchNews, IFetchSearchResults} from "../utils/fetchInterfaces";
-import {RootState} from "./store";
+import {
+    newsAPI,
+    sectionsList
+} from "./crucialData";
+import {
+    IArticleMinified,
+    IFetchArticlesResult,
+    IFetchNews,
+    IFetchSearchResults
+} from "../utils/fetchInterfaces";
+import {
+    RootState
+} from "./store";
 
 interface IArticlesSliceInitState {
     isErrored: boolean,
@@ -22,14 +35,33 @@ export const fetchSearchResults = createAsyncThunk(
     'articles/fetchSearchResults',
     async (paramObj: IFetchSearchResults, thunkAPI) => {
         const assebledURL = `${newsAPI}${paramObj.searchText && paramObj.searchText !== "undefined" ? ("&q=" + paramObj.searchText) : ""}&page=${paramObj.currentPage ? paramObj.currentPage : 1}${paramObj.sectionInfo.sectionId ? `&section=${paramObj.sectionInfo.sectionId}` : ''}`
-        return await axios.get<IFetchArticlesResult>(assebledURL)
+        return await axios.get < IFetchArticlesResult > (assebledURL)
+    }, {
+        condition: (paramObj, {
+            getState,
+            extra
+        }) => {
+            if(paramObj.sectionInfo.sectionId !== "" && !Object.keys(sectionsList).includes(paramObj.sectionInfo.sectionId)){
+                return false
+            }
+        }, dispatchConditionRejection: true
     })
 
 
 export const fetchNews = createAsyncThunk(
     'articles/fetchNews',
     async (paramObj: IFetchNews, thunkAPI) => {
-        return await axios.get<IFetchArticlesResult>(`${newsAPI}&page=${paramObj.currentPage ? paramObj.currentPage : 1}${paramObj.sectionSelected ? `&section=${paramObj.sectionInfo.sectionId}` : ''}`)
+        return await axios.get < IFetchArticlesResult > (`${newsAPI}&page=${paramObj.currentPage ? paramObj.currentPage : 1}${paramObj.sectionInfo.sectionId ? `&section=${paramObj.sectionInfo.sectionId}` : ''}`)
+    // })
+    }, {
+        condition: (paramObj, {
+            getState,
+            extra
+        }) => {
+            if(paramObj.sectionInfo.sectionId !== "" && !Object.keys(sectionsList).includes(paramObj.sectionInfo.sectionId)){
+                return false
+            }
+        }, dispatchConditionRejection: true
     })
 
 
@@ -72,13 +104,12 @@ export const articlesSlice = createSlice({
         },
 
         incrementPage: (state) => {
-            if(!state.isIncrementable){
+            if (!state.isIncrementable) {
                 state.isIncrementable = true
             }
-            if ( (state.currentPage < state.totalPages) && (state.articlesData.length !== 0) )  {
+            if ((state.currentPage < state.totalPages) && (state.articlesData.length !== 0)) {
                 state.currentPage++
-            } else {
-            }
+            } else {}
         },
 
         restoreArticlesState: state => {
@@ -88,7 +119,7 @@ export const articlesSlice = createSlice({
             state.currentPage = 1
             state.articlesData = []
             state.totalPages = 0
-            state.sectionData =  {
+            state.sectionData = {
                 sectionId: "",
                 sectionText: "",
                 sectionSelected: false
@@ -106,21 +137,23 @@ export const articlesSlice = createSlice({
         builder
             .addCase(fetchSearchResults.fulfilled, (state, action) => {
                 let articles = state.articlesData !== undefined ? [...state.articlesData,
-                    ...action.payload.data.response.results] : action.payload.data.response.results
+                    ...action.payload.data.response.results
+                ] : action.payload.data.response.results
                 state.isPending = false
                 state.totalPages = action.payload.data.response.pages
                 state.articlesData = articles
-                    .filter((value, index, self) =>             // and after concat we make this array like a set, u n i q u e
+                    .filter((value, index, self) => // and after concat we make this array like a set, u n i q u e
                         self.findIndex(v => v.id === value.id) === index)
 
             })
             .addCase(fetchNews.fulfilled, (state, action) => {
                 let news = state.articlesData !== undefined ? [...state.articlesData,
-                    ...action.payload.data.response.results] : action.payload.data.response.results
+                    ...action.payload.data.response.results
+                ] : action.payload.data.response.results
                 state.isPending = false
                 state.totalPages = action.payload.data.response.pages
                 state.articlesData = news
-                    .filter((value, index, self) =>             // same thing here
+                    .filter((value, index, self) => // same thing here
                         self.findIndex(v => v.id === value.id) === index)
             })
 
@@ -128,12 +161,13 @@ export const articlesSlice = createSlice({
                 state.isPending = true
                 state.isErrored = false
             })
-            .addCase(fetchSearchResults.pending, (state, action) =>{
+            .addCase(fetchSearchResults.pending, (state, action) => {
                 state.isPending = true
                 state.isErrored = false
             })
 
             .addCase(fetchNews.rejected, (state, action) => {
+                console.log("WE GOT AN ERROR WITH NEWS")
                 state.isPending = false
                 state.isErrored = true
             })
@@ -155,7 +189,13 @@ export const selectIsPending = (state: RootState) => state.articles.isPending
 export const selectIsErrored = (state: RootState) => state.articles.isErrored
 export const selectIsIncrementable = (state: RootState) => state.articles.isIncrementable
 
-export const {incrementPage, restoreArticlesState, setCurrentPage, setSectionId, newSearchFetch} = articlesSlice.actions
+export const {
+    incrementPage,
+    restoreArticlesState,
+    setCurrentPage,
+    setSectionId,
+    newSearchFetch
+} = articlesSlice.actions
 
 export type incrementPageType = typeof incrementPage
 

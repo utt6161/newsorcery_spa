@@ -1,7 +1,7 @@
 export interface IFetchSearchResults {
     currentPage: number,
     sectionInfo: {
-        sectionId: string | null | undefined | number
+        sectionId: string
     },
     searchText: string | null | undefined | number
 }
@@ -38,9 +38,8 @@ export interface IFetchSingleArticleResult {
 
 export interface IFetchNews {
     currentPage: number,
-    sectionSelected: boolean
     sectionInfo: {
-        sectionId: string | null
+        sectionId: string
     },
 }
 

@@ -7,9 +7,8 @@ import {Masonry, MasonryItem} from "./Masonry"
 import NewsListItem from './NewsListItem';
 import {
     fetchNews,
-    incrementPage,
     selectArticlesData,
-    selectCurrentPage, selectIsErrored, selectIsIncrementable, selectIsPending
+    selectCurrentPage, selectIsErrored, selectIsIncrementable, selectIsPending, setSectionId
 } from "../store/articlesSlice";
 import {InfiniteScrollDiv} from "./InfiniteScroll"
 import {nanoid} from "@reduxjs/toolkit";
@@ -17,7 +16,7 @@ import {selectSwitch} from "../store/switchSlice";
 import {selectSectionId, selectSectionSelected} from "../store/articlesSlice";
 import {Transition, animated, useSpring} from 'react-spring'
 import Loading from "./Loading";
-
+import deepEqual from "deep-equal"
 
 // const checkIfEq = (left, right) => {
 //     return JSON.stringify(left) !== JSON.stringify(right)
@@ -43,7 +42,7 @@ const NewsList = () => {
 
     // const isFetching = useSelector(selectIsFetching);
     // const isErrored = useSelector(state => state.isErrored);
-    const newsData = useSelector(selectArticlesData)
+    const newsData = useSelector(selectArticlesData, deepEqual)
     const currentPage = useSelector(selectCurrentPage)
     const sectionSelected = useSelector(selectSectionSelected)
     const sectionId = useSelector(selectSectionId)
@@ -60,7 +59,7 @@ const NewsList = () => {
     // const skipSectionOnce = useRef(true)
 
 
-    const queryParser = new URLSearchParams(location.search)
+    const queryParser = new URLSearchParams(window.location.search)
     const urlSectionId = queryParser.get("sectionId")
 
 
@@ -77,19 +76,32 @@ const NewsList = () => {
     // everything works right now...
     // that name below tho.. bruh
     const sectionPickedGottaSkip = useRef(urlSectionId !== null)
+    
+    useEffect(()=>{
+        if (urlSectionId !== null && sectionId === "") {
+            dispatch(setSectionId({
+                sectionId: urlSectionId
+            }))
+        }
+    })
+
 
     useEffect(() => {
-        if (!sectionPickedGottaSkip.current) {
-            dispatch(fetchNews({
-                currentPage: currentPage ?? 1,
-                sectionSelected: sectionSelected ?? false,
-                sectionInfo: {
-                    sectionId: sectionSelected ? sectionId : ""
-                }
-            }))
-        } else {
-            sectionPickedGottaSkip.current = false
+        console.log("time to fetch")
+        let sectionIdToFetch = ""
+        if(sectionId || urlSectionId){
+            if(sectionId !== "" && urlSectionId === sectionId){
+                sectionIdToFetch = sectionId
+            } else {
+                sectionIdToFetch = urlSectionId!
+            }
         }
+        dispatch(fetchNews({
+            currentPage: currentPage,
+            sectionInfo: {
+                sectionId: sectionIdToFetch
+            }
+        }))
     }, [currentPage, sectionId])
 
     useEffect(() => {
@@ -105,6 +117,7 @@ const NewsList = () => {
         }
 
         if (isErrored) {
+            console.log("here we dispatch an error message")
             setLoadOrErrorRender(
                 <>
                     <h1 style={{color: "#1f8afe"}} className="px-4 pt-4 text-center">Now that&apos;s really strange,
@@ -148,7 +161,7 @@ const NewsList = () => {
     />
     return (
         <>
-            {!isPending && !isErrored && !isIncrementable &&
+            {(!isPending && !isErrored && !isIncrementable) &&
             <>
                 <Transition
                     items={show}
@@ -171,7 +184,7 @@ const NewsList = () => {
                 mainPiece
             }
             <InfiniteScrollDiv/>
-            {isErrored || isPending &&
+            {(isErrored || isPending) &&
                 loadOrErrorRender
             }
         </>

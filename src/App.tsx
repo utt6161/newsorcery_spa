@@ -8,7 +8,7 @@ import SectionButton from "./components/SectionButton";
 
 import Button from "react-bootstrap/Button";
 import {selectSearchText, setCurrentPath, setSearchText} from "./store/searchSlice";
-import {restoreArticlesState, selectSectionId, selectSectionSelected} from "./store/articlesSlice";
+import {fetchNews, restoreArticlesState, selectSectionId, selectSectionSelected} from "./store/articlesSlice";
 // @ts-ignore // no ts types, bruh
 import AnchorLink from 'react-anchor-link-smooth-scroll'
 // @ts-ignore
@@ -52,12 +52,14 @@ function App() {
             if (history.action === 'POP') {
                 if (locationKeys[1] === location.key) {
                     setLocationKeys(([_, ...keys]) => keys);
-                    window.location.reload()
+                    dispatch(restoreArticlesState)
+                    window.location.reload(true)
                     //Handle forward event
 
                 } else {
                     setLocationKeys((keys) => [location.key, ...keys]);
-                    window.location.reload()
+                    dispatch(restoreArticlesState)
+                    window.location.reload(true)
                     // Handle back event
                 }
             }
@@ -91,12 +93,14 @@ function App() {
     const queryParser = new URLSearchParams(location.search)
 
     const toMainPageHandler: React.MouseEventHandler = (e) => {
-        if(stateSectionId !== ""){
-            dispatch(restoreArticlesState())
-        }
+        dispatch(restoreArticlesState())
+        dispatch(fetchNews({
+            currentPage: 1,
+            sectionInfo: {
+                sectionId: ""
+            }
+        }))
     }
-
-
 
     // const [isNotEvenRows, setRows] = useState(true)
 

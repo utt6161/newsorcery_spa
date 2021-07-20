@@ -13,7 +13,7 @@ const SearchField = () => {
     const searchLocation = `/search?q=${localSearch}${sectionSelected ? "&sectionId=" + stateSectionId : ""}`
     const dispatch = useDispatch()
     const history = useHistory()
-    const queryParser = new URLSearchParams(location.search)
+    const queryParser = new URLSearchParams(window.location.search)
     const searchQuery = queryParser.get("q")
     const setSearchInfo = useRef(true)
 
